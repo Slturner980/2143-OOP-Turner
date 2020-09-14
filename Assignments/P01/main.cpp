@@ -17,7 +17,7 @@
 //       Nothing special right now.
 //
 // Files:            
-//       None
+//       Input.txt
 /////////////////////////////////////////////////////////////////////////////////
 #include <iostream>
 #include <fstream>
@@ -34,6 +34,7 @@ using namespace std;
  * Public Methods:
  *      - Stack()
  *      - Stack(int)
+ *      - ~Stack()
  *      - void Push()
  *      - int Pop()
  *      - bool empty()
@@ -41,6 +42,9 @@ using namespace std;
  *      - void Print()
  *      - int* MoreArray()
  *      - int* LessArray()
+ *      - void TrackSize()
+ *      - void Readfile()
+ *      - void Writefile()
  *
  * Private Methods:
  *      - None
@@ -52,15 +56,22 @@ using namespace std;
  *  S.Push(90);
  *  S.Print();
  *  int x = S.Pop();
+ *  S.Readfile();
  *      
  */
 
 class Stack {
 private:
-    int *S;       //array pointer
-    int capacity; //max stack size
-    int top;      //current top (index)
-    int size;     //current num items
+    int *S;          //array pointer
+    int capacity;    //max stack size
+    int top;         //current top (index)
+    int size;        //current num items
+    int maxsize = 0; //max size that the array got 
+    int fileval;     //int value from input file.
+    string filestr;  //string value from input file
+    ifstream fin;    //input stream
+    ofstream fout;   //output stream
+
 public:
     /**
      * Stack:
@@ -76,6 +87,9 @@ public:
         S = new int[capacity];  // allocate new memory
         top = -1;               // initialize top of stack
         size = 0;               // set stack to empty
+        cout << "Name: Sarah Turner" << endl;
+        cout << "Program: P01" << endl;
+        cout << "Date: 15 Sep 2020\n" << endl;
     }
   
     /**
@@ -92,10 +106,26 @@ public:
         S = new int[capacity];  // allocate new memory
         top = -1;               // initialize top of stack
         size = 0;               // set stack to empty
+
+        cout << "Name: Sarah Turner" << endl;
+        cout << "Program: P01" << endl;
+        cout << "Date: 15 Sep 2020\n" << endl;
     }
+   
+    /**
+     * Stack:
+     *    Deconstructor.
+     * Params:
+     *    Void
+     * 
+     * Returns:
+     *     Void
+     */
 
+    ~Stack(){
+        Writefile(); // writes the output file.
+    }
     
-
     /**
      * Push:
      *    Push item onto stack.
@@ -107,26 +137,28 @@ public:
      */
     void Push(int data) {
 
-        // if the array is full
+      // if the array is full
       if (top == capacity - 1){
 
           MoreArray();          // Double the Array
           top++;                // move top of stack up
           size++;               // increment size
           S[top] = data;        // add item to array
-
+          TrackSize();          // Tracks the max size
         }
 
       else{
-        top++;              // move top of stack up
-        size++;             // increment size
-        S[top] = data;      // add item to array
+        top++;              
+        size++;            
+        S[top] = data;    
+        TrackSize();
         }
     }
 
     /**
      * Pop:
-     *    remove item from stack.
+     *    remove item from stack, checks if
+     *    stack is empty or half full.
      * Params:
      *    void
      * 
@@ -139,10 +171,10 @@ public:
       if(top == -1){
         cout << "Error: Stack empty!"<< endl;
         return -1;
-      }
+         }
 
       // if the array is less than half full
-      if(size <= (capacity/2) ){
+      if(size < (capacity/2)-1 ){
 
         LessArray();        // Half the Array
         int data = S[top];  // pull item from stack
@@ -151,7 +183,7 @@ public:
         return data;        // send item back
       }
 
-      
+      // removes from the stack.
       else{
         int data = S[top];  
         top--;              
@@ -170,7 +202,6 @@ public:
      *     bool : true == stack is empty
      */
     bool Empty() {
-        //return size == 0;
         return top == -1;
     }
 
@@ -212,56 +243,74 @@ public:
      *     int* : S
      */    
   
-   int* MoreArray(){
-    
-    capacity *= 2;
-    // Adds 2 when there not any capacity
-    if(capacity == 0){
+    int* MoreArray(){
+        cout << "+ : " << capacity;
+        capacity *= 2;
+        cout << " -> " << capacity << endl;
 
-      capacity += 2;
+        // Adds 2 when there not any capacity
+        if(capacity == 0){
+            capacity += 2;
+         } 
 
-    } 
+        // Allocate new array twice as big
+        int *S2 = new int [capacity];
 
-    // Allocate new array twice as big
-    int *S2 = new int [capacity];
+        // Copy data from S to S2
+        for(int i = 0;i<size;i++){
+            S2[i] = S[i];
+         }
 
-    // Copy data from S to S2
-    for(int i = 0;i<capacity;i++){
-      S2[i] = S[i];
-    }
-
-    // Point S to new array
-     S = S2;
-    return S;
-    
+        // Point S to new array
+         S = S2;
+        return S;
     }
   
-  /**
-  *  LessArray:
-  *    Halves the array's capacity.
-  * Params:
-  *    int* : S
-  * 
-  * Returns:
-  *     int* : S
-  */    
+    /**
+    *  LessArray:
+    *    Halves the array's capacity.
+    * Params:
+    *    int* : S
+    * 
+    * Returns:
+    *     int* : S
+    */    
 
-  int* LessArray(){
+    int* LessArray(){
 
-    capacity /= 2; 
-    // Allocate new array half as big
-    int *S2 = new int[capacity];
+        cout << "- : " << capacity;
+        capacity /= 2; 
+        cout << " -> " << capacity << endl;
 
-    // Copy data from S to S2
-    for(int i = 0;i<capacity;i++){
-      S2[i] = S[i];
+        // Allocate new array half as big
+        int *S2 = new int[capacity];
+
+        // Copy data from S to S2
+        for(int i = 0;i<capacity;i++){
+            S2[i] = S[i];
+        }
+
+        // Point S to new array
+        S = S2;
+
+        return S;
+    
     }
 
-    // Point S to new array
-     S = S2;
+    /**
+    *  TrackSize:
+    *    Tracks how high the stack size got.
+    * Params:
+    *    Void
+    * 
+    * Returns:
+    *     Void
+    */    
 
-    return S;
-    
+    void TrackSize(){
+        if(size > maxsize){
+            maxsize = size;
+        }
     }
 
     /**
@@ -282,36 +331,62 @@ public:
         return os;
     }
 
+    /**
+    *  Readfile:
+    *    Reads and interprets the input file given.
+    * Params:
+    *    Void
+    * 
+    * Returns:
+    *     Void
+    */  
 
+void Readfile(){
+    fin.open("input.txt");
+
+    while(fin >> filestr){
+        
+        // reads an int value if it reads 'Push'    
+        if (filestr == "push"){
+             fin >> fileval;
+             Push(fileval);
+             
+        }
+        else{
+            Pop();
+        }
+        
+     }
+     
+    fin.close();
+}
+
+/**
+    *  Writefile:
+    *    Writes out info in a seperate output file.
+    * Params:
+    *    Void
+    * 
+    * Returns:
+    *     Void
+    */  
+
+void Writefile(){
+    fout.open("output.txt");
+
+    fout << "Name: Sarah Turner" << endl;
+    fout << "Program: P01" << endl;
+    fout << "Date: 15 Sep 2020" << endl;
+    fout << "Start size: 10 " << endl;
+    fout << "Max size: "<< maxsize << endl;
+    fout << "Ending size: " << size << endl;
+
+    fout.close();
+}
 };
 
 
-
 int main() {
-
-    Stack test(10);
-
-    test.Push(4);
-    test.Pop();
-    test.Push(65);
-    cout << test << endl;
-    test.Push(11);
-    test.Push(76);
-    test.Push(5);
-    test.Push(97);
-    test.Push(41);
-    test.Push(14);
-    test.Push(9);
-    test.Push(11);
-    test.Pop();
-    test.Pop();
-    test.Pop();
-    test.Pop();
-    test.Push(81);
-    test.Push(53);
-    test.Push(60);
-     cout << test << endl;
-
-
-
+    Stack test;
+    test.Readfile();
 }
