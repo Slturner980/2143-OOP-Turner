@@ -1,0 +1,6 @@
+Name: Sarah Turner
+Program: P01
+Date: 15 Sep 2020
+Start size: 10 
+Max size: 79
+Ending size: 50
