@@ -12,8 +12,9 @@ in half.
 |   #   | File            | Description                                        |
 | :---: | --------------- | -------------------------------------------------- |
 |   1   | Main.cpp        | The Project itself      |
-|   2   | Input           | Input test file         | 
-|   3   | Cover Page      | Banner Cover page       |
+|   2   | Input.txt       | Input test file         | 
+|   3   | Banner.txt      | Banner Cover page       |
+|   4   | Output.txt      | Output file             |
 
 ### Instructions
 None
